@@ -27,3 +27,327 @@ log(s保证金)
 log(速度)
 log(密码)
 log(输入密码速度)
+
+
+
+
+var 开启悬浮窗 = "1"//0不开，1开
+
+var s渠道 = "王者";//安卓/苹果/王者
+var s区服 = "王者";//QQ/WX/王者
+var s段位 = "100";//王者xx星
+var s单价 = "1";//x元一颗星
+var s抢单数 = "99"//最大抢单数量
+var s保证金 = "100"//最大保证金数
+var 速度 = "10"//速递>0越大识别越慢，不建议太快建议>3
+
+var 密码 = "123567";
+var 输入密码速度 = "2"//速递>0越大识别越慢建议>1
+
+
+
+
+if (开启悬浮窗 == 0) {
+} else if (开启悬浮窗 == 1) {
+    console.show();
+}
+function downslide() {
+    var c = device.width;
+    var b = device.height;
+    log("↓正在刷新");
+    swipe(c * 4 / 5, b / 10 * 2, c * 4 / 5, b / 10 * 8, 660);
+};
+function 接手订单() {
+    var 接订单 = text("接手订单").visibleToUser(true).findOne() || id("io.dcloud.H514D19D6:id/tv_take_order").visibleToUser(true).findOne();
+    if (接订单) {
+        log("正在接手订单");
+        接订单.click();
+    }
+    for (n = 1; n > 0; n++) {
+        var 保证金不够 = textContains("资金不足").visibleToUser(true).findOne(100);
+        var 被抢 = text("本单已被他人接手或已删除！").visibleToUser(true).findOne(100);
+        var 输密码 = id("io.dcloud.H514D19D6:id/view_keyboard").visibleToUser(true).findOne(100);
+        var 抢单成功 = textContains("接手订单成功").findOne(100);
+        var 我接手的 = text("我接手的").findOne(100);
+        var 列表 = id("io.dcloud.H514D19D6:id/recycleview").findOne(100);
+        if (保证金不够 || 被抢) {
+            log("保证金不够 或 被抢")
+            var 知道了 = id("io.dcloud.H514D19D6:id/tv_cancel").findOne();
+            知道了.click();
+            back();
+            break;
+        } else if (抢单成功) {
+            log("抢单成功");
+            已抢 = 已抢 + 1;
+            var 知道了 = id("io.dcloud.H514D19D6:id/tv_cancel").findOne();
+            知道了.click();
+        } else if (输密码) {
+            log("输密码");
+            sleep(200);
+            输入密码();
+        } else if (我接手的) {
+            back();
+        } else if (列表) {
+            break;
+        }
+    }
+}
+function 输入密码() {
+    var 切割密码 = 密码.split("");
+    //log(切割密码)
+    function x(n) {
+        var targetx;
+        var targety;
+        //y
+        if (n == 1 || n == 2 || n == 3) {          // 第1排
+            targety = b + ((2 * 1 - 1) * h)
+        } else if (n == 4 || n == 5 || n == 6) {  // 第2排
+            targety = b + ((2 * 2 - 1) * h)
+        } else if (n == 7 || n == 8 || n == 9) {  // 第3排
+            targety = b + ((2 * 3 - 1) * h)
+        } else if (n == 0) {                      // 第4排
+            targety = b + ((2 * 4 - 1) * h)
+        }
+        //x
+        if (n == 1 || n == 4 || n == 7) {                   // 第1列
+            targetx = a + ((2 * 1 - 1) * w)
+        } else if (n == 2 || n == 5 || n == 8 || n == 0) {  // 第2列
+            targetx = a + ((2 * 2 - 1) * w)
+        } else if (n == 3 || n == 6 || n == 9) {            // 第3列
+            targetx = a + ((2 * 3 - 1) * w)
+        }
+        click(targetx, targety)
+    }
+    var 键盘 = id("io.dcloud.H514D19D6:id/view_keyboard").visibleToUser(true).findOne();
+    if (键盘) {
+        // log(键盘)
+        var a = 键盘.bounds().left;
+        var b = 键盘.bounds().top;
+        var c = 键盘.bounds().right;
+        var d = 键盘.bounds().bottom;
+        var w = 键盘.bounds().width() / 6;
+        var h = 键盘.bounds().height() / 8;
+        // log(a)
+        // log(b)
+        // log(c)
+        // log(d)
+        // log(w)
+        // log(h)
+    }
+    for (o = 0; o < 切割密码.length; o++) {
+        sleep(100 * 输入密码速度);
+        x(切割密码[o]);
+        sleep(100 * 输入密码速度);
+    }
+}
+
+// 去除字符串内所有的空格：str = str.replace(/\s*/g,"");
+// 去除字符串内两头的空格：str = str.replace(/^\s*|\s*$/g,"");
+// 去除字符串内左侧的空格：str = str.replace(/^\s*/,"");
+// 去除字符串内右侧的空格：str = str.replace(/(\s*$)/g,"");
+var 可抢单;
+var 接手中;
+var 已抢 = 0;
+function 单子() {
+    var list = id("io.dcloud.H514D19D6:id/recycleview").findOne();
+    if (list) {
+        log("当前页面：" + (list.children().length));
+        ///筛选是单子
+        var 单 = 0;
+        var 是单 = [];
+        for (a = 0; a < list.children().length; a++) {
+            if (list.child(a).id() !== null && list.child(a).id().includes("rl")) {
+                单 = 单 + 1;
+                是单.push(a)
+            }
+        }
+        log("页面订单：" + 单)
+        //log(是单)
+        ///筛选可抢单子
+        可抢单 = [];
+        for (b = 0; b < 是单.length; b++) {
+            //log(list.child(是单[b]))
+            var x = 0;
+            for (c = 0; c < list.child(是单[b]).children().length; c++) {
+                //log(list.child(是单[b]).child(c).className());
+                // log(list.child(是单[b]).child(c).id().includes("iv_beoverdue") ||
+                //     list.child(是单[b]).child(c).className().includes("ImageView"))
+                if (list.child(是单[b]).child(c).id().includes("iv_beoverdue") ||
+                    list.child(是单[b]).child(c).className().includes("ImageView")) {
+                    x = x + 1;
+                } else {
+                    x = x + 0;
+                }
+            }
+            //log(x)
+            if (x == 0) {
+                可抢单.push(b)
+            }
+        }
+        log("未抢订单：" + 可抢单.length)
+        //log(可抢单)
+
+        sleep(66 * 速度);
+        ////////////单子信息
+        var 计数器 = 0;//
+        for (d = 0; d < 可抢单.length; d++) {
+            var 信息 = "";
+            for (e = 0; e < list.child(是单[(可抢单[d])]).children().length; e++) {
+                信息 = 信息 + list.child(是单[(可抢单[d])]).child(e).text() //+ "\n";
+            }
+            var 单子信息 = 信息.replace(/\s*/g, "");
+            log((d + 1) + "：" + 单子信息);
+
+
+            //////////////匹配单价
+            var regex = /约¥([\d.]+)/; // 正则表达式匹配约¥后面的数字（包括小数）
+            var 单价1 = 单子信息.match(regex);
+            if (单价1) {
+                var regexp = /(?:\.0*|(\.\d+?)0+)$/
+                var 单价2 = 单价1[1].replace(regexp, '$1');
+            } else {
+                var 单价2 = null;
+                log("未匹配到单价");
+            }
+            log("单价：" + 单价2 + "/星")
+            //////////////匹配段位
+            var pattern段位 = /(\d+)星铭文/;
+            var 段位 = 单子信息.match(pattern段位);
+            if (段位) {
+                var 星星数 = 段位[1];
+            } else {
+                var 星星数 = null;
+                log("未匹配到段位");
+            }
+            log("段位：" + 星星数 + "星");
+            //////////////匹配保证金
+            var pattern保证金 = /保证金:([\d.]+)元/;
+            var 保证金 = 单子信息.match(pattern保证金);
+            if (保证金) {
+                var 保证金额 = 保证金[1];
+            } else {
+                var 保证金额 = null;
+                log("未匹配到保证金额");
+            }
+            log("保证金：" + 保证金额 + "元");
+
+
+
+            ////////////////////////////////判断
+            var 通过 = 0;
+            if (单价2 !== null && 单价2 >= s单价) {
+                通过 = 通过 + 1;
+                log("单价 符合条件")
+            } else {
+                log("单价 不符合条件")
+                // continue;
+            };
+            if (星星数 !== null && parseInt(星星数) <= parseInt(s段位)) {
+                通过 = 通过 + 1;
+                log("段位 符合条件")
+            } else {
+                log("段位 不符合条件")
+                // continue;
+            };
+            if (单子信息.includes(s渠道) && 单子信息.includes(s区服)) {
+                通过 = 通过 + 1;
+                log("渠道区服 符合条件")
+            } else {
+                log("渠道区服 不符合条件")
+                // continue;
+            };
+            if (单子信息.includes("指定")) {
+                log("指定 不符合条件")
+                // continue;
+            } else {
+                通过 = 通过 + 1;
+                log("未指定 符合条件")
+            };
+            if (保证金额 !== null && parseFloat(保证金额) <= parseFloat(s保证金)) {
+                通过 = 通过 + 1;
+                log("保证金 符合条件")
+            } else {
+                log("保证金 不符合条件")
+                // continue;
+            };
+
+
+
+
+            if (通过 == 5) {
+                log("这单可抢");
+                //抢单();
+                接手中 = 0;
+                for (k = 0; k > -1; k++) {
+                    try {
+                        list.child(是单[(可抢单[d])]).click();
+                    } catch (error) {
+                        log("单子已被抢走");
+                        接手中 = 0;
+                        break;
+                    }
+                    var 接手 = text("接手订单").visibleToUser(true).findOne(5000);
+                    if (接手) {
+                        接手中 = 1;
+                        break;
+                    }
+                }
+                //抢单();
+                计数器 = 计数器 + 1;
+                sleep(100 * 速度);
+                if (接手中 == 1) {
+                    break;
+                } else {
+
+
+                    
+                    for (m = 0; m > -1; m++) {
+                        back();
+                        var 列表 = id("io.dcloud.H514D19D6:id/recycleview").findOne(10000);
+                        if (列表) {
+                            break;
+                        }
+                    }
+
+
+                    continue;
+                }
+            } else {
+                log("这单不符合条件");
+                sleep(100 * 速度);
+                continue;
+            }
+        }
+        log("已抢订单：" + 已抢);//
+    };
+    return 接手中
+};
+
+
+while (接手中 !== 1 && parseInt(已抢) <= parseInt(s抢单数)) {
+
+    for (j = 0; j > -1; j++) {
+        var list = id("io.dcloud.H514D19D6:id/recycleview").findOne(1000);
+        var 接手 = text("接手订单").visibleToUser(true).findOne(1000);
+        if (list) {
+            downslide();
+            break;
+        } else if (接手) {
+            back();
+            break;
+        }
+    };
+
+    sleep(88 * 速度);
+    单子();
+    sleep(88 * 速度);
+    // log(接手中);
+    if (接手中 == 1) {
+        log("接手订单……");
+        接手订单();
+
+        接手中 = 0;
+    }
+
+}
+
