@@ -1,3 +1,29 @@
 "ui"
 
 alert("test code")
+
+var dlt = storages.create("dlt");
+
+var 开启悬浮窗 = dlt.get("开启悬浮窗")//0不开，1开
+
+var s渠道 = dlt.get("s渠道")
+var s区服 = dlt.get("s区服")
+var s段位 = dlt.get("s段位")
+var s单价 = dlt.get("s单价")
+var s抢单数 = dlt.get("s抢单数")
+var s保证金 = dlt.get("s保证金")
+var 速度 = dlt.get("速度")
+
+var 密码 = dlt.get("密码")
+var 输入密码速度 = dlt.get("输入密码速度")
+
+log(开启悬浮窗)
+log(s渠道)
+log(s区服)
+log(s段位)
+log(s单价)
+log(s抢单数)
+log(s保证金)
+log(速度)
+log(密码)
+log(输入密码速度)
