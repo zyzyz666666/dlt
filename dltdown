@@ -1,6 +1,6 @@
 "ui"
 
-alert("test code")
+alert("测试文件")
 
 var dlt = storages.create("dlt");
 
