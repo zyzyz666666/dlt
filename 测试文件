@@ -1,7 +1,7 @@
 "ui";
 //alert("暂无测试文件“）;
-
-
+toast("测试文件")
+console.show();
 var dlt = storages.create("dlt");
 
 var 开启悬浮窗 = dlt.get("开启悬浮窗")//0不开，1开
