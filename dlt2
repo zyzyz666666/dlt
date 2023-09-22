@@ -1,0 +1,159 @@
+"ui";
+
+// 创建UI界面
+ui.layout(
+    <frame>
+        <viewpager id="viewpager">
+            <ScrollView>
+                <vertical>
+                    <vertical>
+                        <text text="开启悬浮窗：//0不开，1开" />
+                        <input id="开启悬浮窗input" />
+
+                        <text text="s渠道：//安卓/苹果/王者" />
+                        <input id="s渠道input" />
+
+                        <text text="s区服：//QQ/WX/王者" />
+                        <input id="s区服input" />
+
+                        <text text="s段位：//王者xx星//巅峰xx分" />
+                        <input id="s段位input" />
+
+                        <text text="s单价：//x元一颗星" />
+                        <input id="s单价input" />
+
+                        <text text="s抢单数：//最大抢单数量" />
+                        <input id="s抢单数input" />
+
+                        <text text="s保证金：//最大保证金数" />
+                        <input id="s保证金input" />
+
+                        <text text="速度：//速递>0越大识别越慢，不建议太快建议>3" />
+                        <input id="速度input" />
+
+                        <text text="密码：支付密码" />
+                        <input id="密码input" />
+
+                        <text text="输入密码速度：//速递>0越大识别越慢建议>1" />
+                        <input id="输入密码速度input" />
+                    </vertical>
+                    <button id="save" text="开始" />
+                </vertical>
+            </ScrollView>
+        </viewpager>
+    </frame>
+);
+
+var dlt = storages.create("dlt");
+// 读取脚本设置
+function Initialize() {
+    if (dlt.get("开启悬浮窗") != undefined) { ui.开启悬浮窗input.setText(dlt.get("开启悬浮窗")) }
+    if (dlt.get("s渠道") != undefined) { ui.s渠道input.setText(dlt.get("s渠道")) }
+    if (dlt.get("s区服") != undefined) { ui.s区服input.setText(dlt.get("s区服")) }
+    if (dlt.get("s单价") != undefined) { ui.s单价input.setText(dlt.get("s单价")) }
+    if (dlt.get("s段位") != undefined) { ui.s段位input.setText(dlt.get("s段位")) }
+    if (dlt.get("s抢单数") != undefined) { ui.s抢单数input.setText(dlt.get("s抢单数")) }
+    if (dlt.get("s保证金") != undefined) { ui.s保证金input.setText(dlt.get("s保证金")) }
+    if (dlt.get("速度") != undefined) { ui.速度input.setText(dlt.get("速度")) }
+    if (dlt.get("密码") != undefined) { ui.密码input.setText(dlt.get("密码")) }
+    if (dlt.get("输入密码速度") != undefined) { ui.输入密码速度input.setText(dlt.get("输入密码速度")) }
+};
+Initialize()
+
+
+var 开启悬浮窗, s渠道, s区服, s段位, s单价, s抢单数, s保证金, 速度, 密码, 输入密码速度
+var 可以开始 = 0;
+
+ui.save.on("click", function () {
+    // 获取参数值
+    开启悬浮窗 = ui.开启悬浮窗input.text();
+    s渠道 = ui.s渠道input.text();
+    s区服 = ui.s区服input.text();
+    s段位 = ui.s段位input.text();
+    s单价 = ui.s单价input.text();
+    s抢单数 = ui.s抢单数input.text();
+    s保证金 = ui.s保证金input.text();
+    速度 = ui.速度input.text();
+    密码 = ui.密码input.text();
+    输入密码速度 = ui.输入密码速度input.text();
+
+    /////
+    dlt.put("开启悬浮窗", 开启悬浮窗);
+    dlt.put("s渠道", s渠道);
+    dlt.put("s区服", s区服);
+    dlt.put("s段位", s段位);
+    dlt.put("s单价", s单价);
+    dlt.put("s抢单数", s抢单数);
+    dlt.put("s保证金", s保证金);
+    dlt.put("速度", 速度);
+
+    dlt.put("密码", 密码);
+    dlt.put("输入密码速度", 输入密码速度);
+
+    /////
+    ///////////////下载脚本
+    function 下载ui() {
+        let url = [
+            'https://ghproxy.com/https://raw.githubusercontent.com/zyzyz666666/dlt/main/dltdown',
+        ];
+        for (var i = 0; i < 10; i++) {
+            try {
+                let res = http.get(url[i], {
+                    timeout: 10000 // 设置超时时间为10秒
+                });
+                console.log(res.statusCode);
+                if (res.statusCode == 200) {
+                    var UI = res.body.string();
+                    if (UI.indexOf('"ui"') == 0) {
+                        toastLog('UI' + '加载成功');
+                        log("开始加载UI");
+                        engines.execScript("UI", UI);
+                        exit();
+                        break;
+                    };
+                } else {
+                    toastLog('UI' + '下载失败');
+                }
+            } catch (error) {
+                if (error instanceof java.net.SocketTimeoutException) {
+                    toastLog('UI' + '加载超时');
+                    continue; // 继续下一次循环请求
+                } else {
+                    toastLog('UI' + '请求失败')//，错误：' + error);
+                }
+            }
+            if (i == 9) {
+                toastLog("请关闭App后重新打开或联系管理员");
+                alert("请关闭App后重新打开或联系管理员");
+            }
+        }
+
+    };
+
+    var isConnected;
+
+    function checkNetworkState() {
+        var cm = context.getSystemService(context.CONNECTIVITY_SERVICE);
+        var activeNetwork = cm.getActiveNetworkInfo();
+
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            isConnected = true;
+            toastLog("手机已联网-正在加载界面");
+            下载ui();
+        } else {
+            isConnected = false;
+            toastLog("手机未联网");
+            alert("请检查网络！");
+        }
+    }
+    threads.start(function () {
+        checkNetworkState()
+    })
+
+
+
+
+});
+
+
+
